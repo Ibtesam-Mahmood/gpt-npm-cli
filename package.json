@@ -1,12 +1,15 @@
 {
   "name": "gpt-npm-cli",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "\"# gpt-npm-cli\"",
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
     "start": "npx tsc & node ./dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "gptcli": "./dist/index.js"
   },
   "repository": {
     "type": "git",

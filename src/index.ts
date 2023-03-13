@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import { Command } from "commander";
 import SummaryProgram from "./programs/summary-program";
 import figlet from "figlet";
