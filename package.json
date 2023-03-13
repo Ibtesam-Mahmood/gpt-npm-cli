@@ -1,0 +1,31 @@
+{
+  "name": "gpt-npm-cli",
+  "version": "1.0.0",
+  "description": "\"# gpt-npm-cli\"",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "npx tsc & node ./dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ibtesam-Mahmood/gpt-npm-cli.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ibtesam-Mahmood/gpt-npm-cli/issues"
+  },
+  "homepage": "https://github.com/Ibtesam-Mahmood/gpt-npm-cli#readme",
+  "dependencies": {
+    "commander": "^10.0.0",
+    "figlet": "^1.5.2"
+  },
+  "devDependencies": {
+    "@types/figlet": "^1.5.5",
+    "@types/node": "^18.15.0",
+    "typescript": "^4.9.5"
+  }
+}
