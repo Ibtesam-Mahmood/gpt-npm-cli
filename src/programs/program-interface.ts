@@ -3,21 +3,20 @@ import { Command, OptionValues } from "commander";
 interface ProgramInput {
   args: any[]; // A list of the input arguments
   input: {}; // A dictionary of the input options
+  globals: {}; // A dictionary of the global options
 }
 
 abstract class ProgramInterface {
   protected abstract name: string;
   protected abstract description: string;
 
-  protected obj: ProgramInterface = this;
-
   // Configure the program with the commander instance
   public configure(cliApp: Command): Command {
     let command = cliApp.command(this.name).description(this.description);
 
     // Add the run function to the command
-    command = command.action((...args: any[]) =>
-      this.runWrapper(this.run, ...args)
+    command = command.action((...args) =>
+      this.runWrapper(this.run, cliApp, ...args)
     );
 
     return command;
@@ -28,6 +27,7 @@ abstract class ProgramInterface {
   // formats the input for the runner
   private runWrapper(
     run: (input: ProgramInput) => Promise<void>,
+    cliApp: Command,
     ...args: any[]
   ): Promise<void> {
     // Format the input
@@ -48,6 +48,7 @@ abstract class ProgramInterface {
     let input: ProgramInput = {
       args: finalArgs,
       input: finalInput,
+      globals: cliApp.optsWithGlobals(),
     };
 
     return run(input);

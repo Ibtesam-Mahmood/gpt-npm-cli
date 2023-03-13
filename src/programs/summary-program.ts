@@ -1,4 +1,4 @@
-import { OptionValues } from "commander";
+import { Command, OptionValues } from "commander";
 import { ProgramInterface, ProgramInput } from "./program-interface";
 
 class SummaryProgram extends ProgramInterface {
