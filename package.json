@@ -24,6 +24,7 @@
   "homepage": "https://github.com/Ibtesam-Mahmood/gpt-npm-cli#readme",
   "dependencies": {
     "commander": "^10.0.0",
+    "dotenv": "^16.0.3",
     "figlet": "^1.5.2"
   },
   "devDependencies": {

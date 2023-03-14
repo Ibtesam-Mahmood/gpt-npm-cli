@@ -1,4 +1,5 @@
-import { Command, OptionValues } from "commander";
+import { Command, OptionValues, CommanderError } from "commander";
+import EnvironmentHelper from "../helpers/environment-helper";
 
 interface ProgramInput {
   args: any[]; // A list of the input arguments
@@ -9,6 +10,7 @@ interface ProgramInput {
 abstract class ProgramInterface {
   protected abstract name: string;
   protected abstract description: string;
+  protected requiredEnvironmentVariables: string[] = []; // Optional
 
   // Configure the program with the commander instance
   public configure(cliApp: Command): Command {
@@ -50,6 +52,15 @@ abstract class ProgramInterface {
       input: finalInput,
       globals: cliApp.optsWithGlobals(),
     };
+
+    const isInit = EnvironmentHelper.isEnvironmentInitialized(
+      this.requiredEnvironmentVariables
+    );
+    if (!isInit) {
+      throw new Error(
+        `All required environment variables are not set. required: ${this.requiredEnvironmentVariables}`
+      );
+    }
 
     return run(input);
   }
