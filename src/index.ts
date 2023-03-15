@@ -5,7 +5,7 @@ import SummaryProgram from "./programs/summary-program";
 import figlet from "figlet";
 import ConfigureProgram from "./programs/configure/configure-program";
 
-const version = "0.0.2";
+const version = "0.0.3";
 const description =
   "A super charged CLI for interfacing with GPT-3 and other AI services";
 

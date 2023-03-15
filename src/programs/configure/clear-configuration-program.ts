@@ -1,5 +1,5 @@
 import { ProgramInterface, ProgramInput } from "../program-interface";
-import EnvironmentHelper from "../../helpers/environment-helper";
+import EnvironmentService from "../../services/environment-service";
 
 class ClearConfigurationProgram extends ProgramInterface {
   protected get name(): string {
@@ -10,7 +10,7 @@ class ClearConfigurationProgram extends ProgramInterface {
   }
 
   public async run(input: ProgramInput): Promise<void> {
-    EnvironmentHelper.setEnvironemntFile("");
+    EnvironmentService.setEnvironemntFile("");
     console.log("Cleared environment file");
   }
 }

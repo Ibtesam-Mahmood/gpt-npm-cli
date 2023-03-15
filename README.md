@@ -1,4 +1,4 @@
-# gpt-npm-cli v0.0.2
+# gpt-npm-cli v0.0.3
 
 To get started with the project clone the repository and run `npm run build && npm install -g .` within the project root.
 

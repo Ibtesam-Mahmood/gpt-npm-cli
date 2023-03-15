@@ -1,5 +1,5 @@
 import { Command, Option, Argument } from "commander";
-import EnvironmentHelper from "../helpers/environment-helper";
+import EnvironmentService from "../services/environment-service";
 
 interface ProgramInput {
   args: any[]; // A list of the input arguments
@@ -59,7 +59,7 @@ abstract class ProgramInterface {
   protected abstract run(input: ProgramInput): Promise<void>;
 
   // formats the input for the runner
-  private runWrapper(
+  private async runWrapper(
     run: (input: ProgramInput) => Promise<void>,
     root: Command,
     ...args: any[]
@@ -88,16 +88,34 @@ abstract class ProgramInterface {
       command: this.command!,
     };
 
-    const isInit = EnvironmentHelper.isEnvironmentInitialized(
+    const isInit = EnvironmentService.isEnvironmentInitialized(
       this.requiredEnvironmentVariables
     );
-    if (!isInit) {
-      throw new Error(
-        `All required environment variables are not set. required: ${this.requiredEnvironmentVariables}`
-      );
-    }
 
-    return run(input);
+    // Run the command and validate it
+    try {
+      if (!isInit) {
+        throw new Error(
+          `All required environment variables are not set. required: ${this.requiredEnvironmentVariables}`
+        );
+      }
+
+      // Run the program
+      await this.run(input);
+    } catch (e) {
+      // Catch any errors and print them
+      if (input.globals.debug) {
+        // Check if the verbose flag is set and print the stack trace
+        console.error(e);
+      } else {
+        // Print just the message
+        let message = e;
+        if (e instanceof Error) {
+          message = e.message;
+        }
+        console.error(message);
+      }
+    }
   }
 }
 

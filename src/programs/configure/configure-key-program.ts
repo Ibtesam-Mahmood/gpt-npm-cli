@@ -1,6 +1,6 @@
 import { Argument, Option } from "commander";
 import { ProgramInterface, ProgramInput } from "../program-interface";
-import EnvironmentHelper from "../../helpers/environment-helper";
+import EnvironmentService from "../../services/environment-service";
 
 interface _ConfigureKeyInput {
   command: string;
@@ -36,14 +36,14 @@ class ConfigureOpenAiProgram extends ProgramInterface {
   public async run(input: ProgramInput): Promise<void> {
     if (input.args.length === 1) {
       // Write key
-      EnvironmentHelper.writeToEnvironmentFile(
+      EnvironmentService.writeToEnvironmentFile(
         input.objects.config.env,
         input.args[0]
       );
       console.log(`Wrote ${input.objects.config.name} key to environment file`);
     } else if (input.input.print) {
       // Print current key
-      const key = EnvironmentHelper.getEnvironmentVariable(
+      const key = EnvironmentService.getEnvironmentVariable(
         input.objects.config.env
       );
       console.log(`Current ${input.objects.config.name} key: ${key}`);

@@ -1,6 +1,6 @@
 {
   "name": "gpt-npm-cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "\"# gpt-npm-cli\"",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,9 @@
   },
   "homepage": "https://github.com/Ibtesam-Mahmood/gpt-npm-cli#readme",
   "dependencies": {
+    "@types/cheerio": "^0.22.31",
+    "axios": "^1.3.4",
+    "cheerio": "^1.0.0-rc.12",
     "commander": "^10.0.0",
     "dotenv": "^16.0.3",
     "figlet": "^1.5.2"

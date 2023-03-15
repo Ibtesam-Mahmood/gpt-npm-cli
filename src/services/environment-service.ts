@@ -6,38 +6,38 @@ class EnvironmentNames {
   OPEN_AI_API_KEY: string = "OPEN_AI_API_KEY";
 }
 
-class EnvironmentHelper {
+class EnvironmentService {
   public static readonly names: EnvironmentNames = new EnvironmentNames();
 
   private static readonly ENV_PATH: string = path.resolve(__dirname, ".env");
 
   public static initializeEnvironment(): void {
     dotenv.config({
-      path: EnvironmentHelper.ENV_PATH,
+      path: EnvironmentService.ENV_PATH,
     });
   }
 
   public static isEnvironmentInitialized(vars: string[]): boolean {
-    EnvironmentHelper.initializeEnvironment();
+    EnvironmentService.initializeEnvironment();
     return vars.every((v) => !!process.env[v]);
   }
 
   public static getEnvironmentVariable(key: string): string {
-    EnvironmentHelper.initializeEnvironment();
+    EnvironmentService.initializeEnvironment();
     return process.env[key] || "";
   }
 
   public static setEnvironemntFile(value: string): void {
-    fs.writeFileSync(EnvironmentHelper.ENV_PATH, value);
+    fs.writeFileSync(EnvironmentService.ENV_PATH, value);
   }
 
   public static writeToEnvironmentFile(key: string, value: string): void {
     // Check if the environment file exists
     let contentsList: string[] = [];
-    if (fs.existsSync(EnvironmentHelper.ENV_PATH)) {
+    if (fs.existsSync(EnvironmentService.ENV_PATH)) {
       // Pull the file contents and set the contents list
       const fileContents = fs
-        .readFileSync(EnvironmentHelper.ENV_PATH)
+        .readFileSync(EnvironmentService.ENV_PATH)
         .toString();
       contentsList = fileContents.split("\n");
     }
@@ -59,8 +59,8 @@ class EnvironmentHelper {
     }, "");
 
     // Write the new contents to the file
-    EnvironmentHelper.setEnvironemntFile(newContents);
+    EnvironmentService.setEnvironemntFile(newContents);
   }
 }
 
-export default EnvironmentHelper;
+export default EnvironmentService;

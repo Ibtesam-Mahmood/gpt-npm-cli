@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { ProgramInterface, ProgramInput } from "../program-interface";
-import EnvironmentHelper from "../../helpers/environment-helper";
+import EnvironmentService from "../../services/environment-service";
 import ConfigureOpenAiProgram from "./configure-key-program";
 import ClearConfigurationProgram from "./clear-configuration-program";
 
@@ -24,7 +24,7 @@ class ConfigureProgram extends ProgramInterface {
     new ConfigureOpenAiProgram({
       command: "openai",
       name: "Open AI API",
-      env: EnvironmentHelper.names.OPEN_AI_API_KEY,
+      env: EnvironmentService.names.OPEN_AI_API_KEY,
     }).configure(this.command);
 
     return this.command!;
