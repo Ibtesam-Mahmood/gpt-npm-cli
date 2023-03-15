@@ -24,7 +24,7 @@ class ConfigureProgram extends ProgramInterface {
     new ConfigureOpenAiProgram({
       command: "openai",
       name: "Open AI API",
-      env: EnvironmentService.names.OPEN_AI_API_KEY,
+      env: EnvironmentService.names.OPENAI_API_KEY,
     }).configure(this.command);
 
     return this.command!;

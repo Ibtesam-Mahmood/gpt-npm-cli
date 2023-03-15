@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 
 class EnvironmentNames {
-  OPEN_AI_API_KEY: string = "OPEN_AI_API_KEY";
+  OPENAI_API_KEY: string = "OPENAI_API_KEY";
 }
 
 class EnvironmentService {

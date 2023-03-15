@@ -8,10 +8,10 @@ class SummaryProgram extends ProgramInterface {
     return "summary";
   }
   protected get description(): string {
-    return `Allows for the sumarization of text and urls.\n<Required: [${EnvironmentService.names.OPEN_AI_API_KEY}]>`;
+    return `Allows for the sumarization of text and urls.\n<Required: [${EnvironmentService.names.OPENAI_API_KEY}]>`;
   }
   protected get requiredEnvironmentVariables(): string[] {
-    return [EnvironmentService.names.OPEN_AI_API_KEY];
+    return [EnvironmentService.names.OPENAI_API_KEY];
   }
   protected get arguments(): Argument[] {
     return [new Argument("[input...]", "The text or url to summarize.")];
