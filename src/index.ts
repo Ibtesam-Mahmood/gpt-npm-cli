@@ -3,8 +3,9 @@
 import { Command } from "commander";
 import SummaryProgram from "./programs/summary-program";
 import figlet from "figlet";
+import ConfigureProgram from "./programs/configure/configure-program";
 
-const version = "0.0.1";
+const version = "0.0.2";
 const description =
   "A super charged CLI for interfacing with GPT-3 and other AI services";
 
@@ -27,6 +28,7 @@ async function main(): Promise<void> {
 
   // Confifgure the programs
   new SummaryProgram().configure(cliApp);
+  new ConfigureProgram().configure(cliApp);
 
   // Parse the args for the program
   await cliApp.parseAsync(process.argv);

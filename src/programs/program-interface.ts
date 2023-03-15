@@ -1,25 +1,57 @@
-import { Command, OptionValues, CommanderError } from "commander";
+import { Command, Option, Argument } from "commander";
 import EnvironmentHelper from "../helpers/environment-helper";
 
 interface ProgramInput {
   args: any[]; // A list of the input arguments
-  input: {}; // A dictionary of the input options
-  globals: {}; // A dictionary of the global options
+  input: { [key: string]: any }; // A dictionary of the input options
+  globals: { [key: string]: any }; // A dictionary of the global options
+  objects: { [key: string]: any }; // A dictionary of the additional objects
+  root: Command; // The root command
+  command: Command; // The current command
 }
 
 abstract class ProgramInterface {
-  protected abstract name: string;
-  protected abstract description: string;
-  protected requiredEnvironmentVariables: string[] = []; // Optional
+  public command?: Command;
+  protected abstract get name(): string;
+  protected abstract get description(): string;
+
+  // Optional
+  protected get arguments(): Argument[] {
+    return [];
+  }
+  protected get options(): Option[] {
+    return [];
+  }
+  protected get requiredEnvironmentVariables(): string[] {
+    return [];
+  }
+  protected get inputObjects(): { [key: string]: any } {
+    return {};
+  }
 
   // Configure the program with the commander instance
-  public configure(cliApp: Command): Command {
-    let command = cliApp.command(this.name).description(this.description);
+  // Sets the command at each step
+  public configure(root: Command): Command {
+    let command: Command = root
+      .command(this.name)
+      .description(this.description);
+
+    // Add any arguments
+    this.arguments.forEach((argument) => {
+      command = command.addArgument(argument);
+    });
+
+    // Add any options
+    this.options.forEach((option) => {
+      command = command.addOption(option);
+    });
 
     // Add the run function to the command
     command = command.action((...args) =>
-      this.runWrapper(this.run, cliApp, ...args)
+      this.runWrapper(this.run, root, ...args)
     );
+
+    this.command = command;
 
     return command;
   }
@@ -29,7 +61,7 @@ abstract class ProgramInterface {
   // formats the input for the runner
   private runWrapper(
     run: (input: ProgramInput) => Promise<void>,
-    cliApp: Command,
+    root: Command,
     ...args: any[]
   ): Promise<void> {
     // Format the input
@@ -37,20 +69,23 @@ abstract class ProgramInterface {
     for (let i = 0; i < args.length; i++) {
       if (args[i] instanceof Command) {
         break;
-      } else {
+      } else if (args[i] != undefined && args[i] != null) {
         finalArgs.push(args[i]);
       }
     }
 
     let finalInput = {};
-    if (typeof finalArgs[finalArgs.length - 1] === "object") {
+    if (typeof finalArgs[finalArgs.length - 1] === typeof {}) {
       finalInput = finalArgs.pop();
     }
 
     let input: ProgramInput = {
       args: finalArgs,
       input: finalInput,
-      globals: cliApp.optsWithGlobals(),
+      globals: root.optsWithGlobals(),
+      objects: this.inputObjects,
+      root: root,
+      command: this.command!,
     };
 
     const isInit = EnvironmentHelper.isEnvironmentInitialized(

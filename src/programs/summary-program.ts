@@ -3,15 +3,18 @@ import { ProgramInterface, ProgramInput } from "./program-interface";
 import EnvironmentHelper from "../helpers/environment-helper";
 
 class SummaryProgram extends ProgramInterface {
-  protected name: string = "summary";
-  protected description: string =
-    "Allows for the sumarization of text and urls";
-  protected requiredEnvironmentVariables: string[] = [
-    EnvironmentHelper.names.OPEN_AI_API_KEY,
-  ]; // Optional
+  protected get name(): string {
+    return "summary";
+  }
+  protected get description(): string {
+    return `Allows for the sumarization of text and urls.\n<Required Keys: [${EnvironmentHelper.names.OPEN_AI_API_KEY}]>`;
+  }
+  protected get requiredEnvironmentVariables(): string[] {
+    return [EnvironmentHelper.names.OPEN_AI_API_KEY];
+  }
 
   public async run(input: ProgramInput): Promise<void> {
-    throw new Error("Method not implemented.");
+    input.command.help();
   }
 }
 
