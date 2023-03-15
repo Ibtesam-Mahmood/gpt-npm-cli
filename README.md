@@ -4,6 +4,6 @@ To get started with the project clone the repository and run `npm i & npm run bu
 
 Calling the `gptcli` command from the command-line will run the CLI.
 
-For updates simply run `git pull & npm run build` within the project root.
+For updates simply run `git pull & npm i & npm run build` within the project root.
 
 It is important to set your keys to expect full functionality. run the `gptcli config` command for more information.
