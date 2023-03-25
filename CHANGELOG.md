@@ -1,3 +1,8 @@
+## [0.1.0] v0.1.0
+
+* Added `langchain` package for llm functionality
+* Created `summary` program: summarizes text or urls with no limit
+
 ## [0.0.3] v0.0.3
 
 * Added error checking and `debug` flag for more verbose error outputs

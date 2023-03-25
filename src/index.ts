@@ -1,11 +1,11 @@
 #! /usr/bin/env node
 
 import { Command } from "commander";
-import SummaryProgram from "./programs/summary-program";
+import SummaryProgram from "./programs/summary-program.js";
 import figlet from "figlet";
-import ConfigureProgram from "./programs/configure/configure-program";
+import ConfigureProgram from "./programs/configure/configure-program.js";
 
-const version = "0.0.3";
+const version = "0.1.0";
 const description =
   "A super charged CLI for interfacing with GPT-3 and other AI services";
 

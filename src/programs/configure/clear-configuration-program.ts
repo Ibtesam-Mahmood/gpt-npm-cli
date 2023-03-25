@@ -1,5 +1,5 @@
-import { ProgramInterface, ProgramInput } from "../program-interface";
-import EnvironmentService from "../../services/environment-service";
+import { ProgramInterface, ProgramInput } from "../program-interface.js";
+import EnvironmentService from "../../services/environment-service.js";
 
 class ClearConfigurationProgram extends ProgramInterface {
   protected get name(): string {

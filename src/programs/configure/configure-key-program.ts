@@ -1,6 +1,6 @@
 import { Argument, Option } from "commander";
-import { ProgramInterface, ProgramInput } from "../program-interface";
-import EnvironmentService from "../../services/environment-service";
+import { ProgramInterface, ProgramInput } from "../program-interface.js";
+import EnvironmentService from "../../services/environment-service.js";
 
 interface _ConfigureKeyInput {
   command: string;

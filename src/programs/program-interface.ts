@@ -1,5 +1,5 @@
 import { Command, Option, Argument } from "commander";
-import EnvironmentService from "../services/environment-service";
+import EnvironmentService from "../services/environment-service.js";
 
 interface ProgramInput {
   args: any[]; // A list of the input arguments
@@ -98,6 +98,10 @@ abstract class ProgramInterface {
         throw new Error(
           `All required environment variables are not set. required: ${this.requiredEnvironmentVariables}`
         );
+      }
+
+      if (input.globals.debug) {
+        console.log("Running with debug mode [enabled]");
       }
 
       // Run the program

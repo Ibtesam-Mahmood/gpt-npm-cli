@@ -1,8 +1,8 @@
 import { Command } from "commander";
-import { ProgramInterface, ProgramInput } from "../program-interface";
-import EnvironmentService from "../../services/environment-service";
-import ConfigureOpenAiProgram from "./configure-key-program";
-import ClearConfigurationProgram from "./clear-configuration-program";
+import { ProgramInterface, ProgramInput } from "../program-interface.js";
+import EnvironmentService from "../../services/environment-service.js";
+import ConfigureOpenAiProgram from "./configure-key-program.js";
+import ClearConfigurationProgram from "./clear-configuration-program.js";
 
 class ConfigureProgram extends ProgramInterface {
   protected get name(): string {
