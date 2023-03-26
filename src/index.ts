@@ -16,7 +16,7 @@ async function main(): Promise<void> {
   const cliApp = new Command()
     .version(version)
     .description(description)
-    .option("-d, --debug", "toggles verbose logging");
+    .option("-d, --debug", "toggles verbose logging", false);
 
   // Configure the help command
   cliApp.configureHelp({
