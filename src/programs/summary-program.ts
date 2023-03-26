@@ -1,13 +1,13 @@
-import { ProgramInterface, ProgramInput } from "./program-interface";
-import EnvironmentService from "../services/environment-service";
+import { ProgramInterface, ProgramInput } from "./program-interface.js";
+import EnvironmentService from "../services/environment-service.js";
 import { Argument } from "commander";
-import WebExtractionService from "../services/web-extraction-service";
-// import { LLMChain } from "langchain";
-// import {
-//   ChatMessage,
-//   HumanChatMessage,
-//   SystemChatMessage,
-// } from "langchain/schema";
+import WebExtractionService from "../services/web-extraction-service.js";
+const { loadSummarizationChain } = await import("langchain/chains");
+const { OpenAIChat } = await import("langchain/llms");
+const { CallbackManager } = await import("langchain/callbacks");
+const { RecursiveCharacterTextSplitter } = await import(
+  "langchain/text_splitter"
+);
 
 class SummaryProgram extends ProgramInterface {
   protected get name(): string {
@@ -68,12 +68,6 @@ class SummaryProgram extends ProgramInterface {
     debug: boolean = false
   ): Promise<void> {
     // Imports
-    const { OpenAIChat } = await import("langchain/llms");
-    const { CallbackManager } = await import("langchain/callbacks");
-    const { RecursiveCharacterTextSplitter } = await import(
-      "langchain/text_splitter"
-    );
-    const { loadSummarizationChain } = await import("langchain/chains");
 
     const callbackManager = CallbackManager.fromHandlers({
       handleLLMStart: async (llm: { name: string }, prompts: string[]) => {
@@ -115,3 +109,7 @@ class SummaryProgram extends ProgramInterface {
 }
 
 export default SummaryProgram;
+
+// Lets say i wanted to make a role playing game within my gptcli as a new command. The game would have a clear objective that the user would have to complete. The program would ensure that the context of the game is well organized and fault tolerant. The program can be configured with additional parameters for the setting of the game before starting. The chatbot will continue to act as a narrator prompting the user with descriptions of the result of their actions and the setting, continuously asking the user what they want to next until he objective of the game is met.
+
+// With what you know now, how would you design this system within nodejs typescript and integrate it within the gpt cli.

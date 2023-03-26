@@ -7,6 +7,11 @@
     "module": "nodenext",
     "sourceMap": true,
     "esModuleInterop": true,
-    "moduleResolution": "node16"
+    "moduleResolution": "node16",
+    "paths": {
+      "cheerio": [
+          "./node_modules/cheerio/lib/index.d.ts"
+      ]
+  }
   }
 }
