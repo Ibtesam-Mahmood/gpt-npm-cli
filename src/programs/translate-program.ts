@@ -4,41 +4,37 @@ import { Argument, Option } from "commander";
 import WebExtractionService from "../services/web-extraction-service.js";
 import OpenAiChatHelper from "../helpers/open-ai-chat-helper.js";
 
-interface SummarizationInput {
-  text: string; //url or text
+interface TranslationInput {
+  text: string; //text
   mode: "map_reduce" | "stuff";
   split: number;
   debug: boolean;
   url?: string;
 }
 
-class SummaryProgram extends ProgramInterface {
+class TranslateProgram extends ProgramInterface {
   protected get name(): string {
-    return "summary";
+    return "translate";
   }
   protected get description(): string {
-    return `Allows for the sumarization of text and urls. By defualt runs the map reduce mode which does not have a limit on its input.`;
+    return `Allows for the translatation of text from one langauge to the other. By defualt the program detercts the input language and translates to english.`;
   }
   protected get requiredEnvironmentVariables(): string[] {
     return [EnvironmentService.names.OPENAI_API_KEY];
   }
   protected get arguments(): Argument[] {
-    return [new Argument("[input...]", "The text or url to summarize.")];
+    return [new Argument("[input...]", "The text tranlsate.")];
   }
   protected get options(): Option[] {
     return [
       new Option(
-        "-m, --mode <mode>",
-        "The summarization mode to run on:" +
-          "\n\tmap-reduce: Runs the map reduce mode which does not have a limit on its input." +
-          "\n\tstuff: Sends the input directly to summarization, you may encounter max rate limits."
-      )
-        .choices(["map_reduce", "stuff"])
-        .default("map_reduce"),
+        "-s, --source <source>",
+        "The expected langauge for the input."
+      ).default("Auto"),
       new Option(
-        "--split <split>",
-        "Defines the split length for large input texts when running with map reduce mode."
-      ).default(3000),
+        "-o, --output <output>",
+        "The langauge to translate the input to."
+      ).default("English"),
     ];
   }
 
@@ -49,37 +45,18 @@ class SummaryProgram extends ProgramInterface {
 
       if (inputArg.length > 0) {
         // Summarize
-        return SummaryProgram.runSummary({
+        TranslateProgram.translate({
           text: inputArg,
           mode: input.input.mode,
           split: input.input.split,
           debug: input.globals.debug,
         });
+        return;
       }
     }
 
     // Default show help
     input.command.help();
-  }
-
-  private static async runSummary(input: SummarizationInput): Promise<void> {
-    // Determine if the text is a url
-    const isUrl = WebExtractionService.isUrl(input.text);
-    if (isUrl) {
-      // Extract the webpage content
-      try {
-        input.url = input.text;
-        input.text = (
-          await WebExtractionService.extract(input.text)
-        ).toString();
-      } catch (e) {
-        console.error(`Could not extract webpage content from url: ${input}`);
-        return;
-      }
-    }
-
-    // Summarize the text
-    await SummaryProgram.summarizeText(input);
   }
 
   private static async summarizeText(input: SummarizationInput): Promise<void> {
@@ -108,4 +85,4 @@ class SummaryProgram extends ProgramInterface {
   }
 }
 
-export default SummaryProgram;
+export default TranslateProgram;
