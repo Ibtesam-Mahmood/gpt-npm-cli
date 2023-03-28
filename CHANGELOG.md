@@ -1,6 +1,7 @@
 ## [0.1.1] v0.1.1
 
-* Updated summarization program with `--mode` and `--split` flags.
+* Created `translate` program
+* Updated `summary` program with `--mode` and `--split` flags.
 * Factored out open ai functionality.
 * Updated to top-level await with module exports
 

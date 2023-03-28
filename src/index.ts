@@ -4,6 +4,7 @@ import { Command } from "commander";
 import SummaryProgram from "./programs/summary-program.js";
 import figlet from "figlet";
 import ConfigureProgram from "./programs/configure/configure-program.js";
+import TranslateProgram from "./programs/translate-program.js";
 
 const version = "0.1.0";
 const description =
@@ -29,6 +30,7 @@ async function main(): Promise<void> {
   // Confifgure the programs
   new SummaryProgram().configure(cliApp);
   new ConfigureProgram().configure(cliApp);
+  new TranslateProgram().configure(cliApp);
 
   // Parse the args for the program
   await cliApp.parseAsync(process.argv);

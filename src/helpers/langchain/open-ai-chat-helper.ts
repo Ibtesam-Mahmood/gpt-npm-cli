@@ -1,4 +1,10 @@
+import { LLMChain } from "langchain/chains";
 import { LLM } from "langchain/llms";
+import {
+  ChatPromptTemplate,
+  HumanMessagePromptTemplate,
+  SystemMessagePromptTemplate,
+} from "langchain/prompts";
 
 const { OpenAIChat } = await import("langchain/llms");
 const { CallbackManager } = await import("langchain/callbacks");
@@ -12,6 +18,11 @@ interface OpenAiChatHelperInput {
 interface SummarizationOptions {
   type: "map_reduce" | "stuff";
   split: number;
+}
+
+interface TranslationOptions {
+  source: string;
+  output: string;
 }
 
 class OpenAiChatHelper {
@@ -46,6 +57,17 @@ class OpenAiChatHelper {
       },
     });
   }
+
+  /*
+ 
+     ____                                             
+    / ___| _   _ _ __ ___  _ __ ___   __ _ _ __ _   _ 
+    \___ \| | | | '_ ` _ \| '_ ` _ \ / _` | '__| | | |
+     ___) | |_| | | | | | | | | | | | (_| | |  | |_| |
+    |____/ \__,_|_| |_| |_|_| |_| |_|\__,_|_|   \__, |
+                                                |___/ 
+ 
+*/
 
   public async summarize(
     text: string,
@@ -82,6 +104,50 @@ class OpenAiChatHelper {
 
     // Output the result
     return res.text;
+  }
+
+  /*
+ 
+     _____                    _       _       
+    |_   _| __ __ _ _ __  ___| | __ _| |_ ___ 
+      | || '__/ _` | '_ \/ __| |/ _` | __/ _ \
+      | || | | (_| | | | \__ \ | (_| | ||  __/
+      |_||_|  \__,_|_| |_|___/_|\__,_|\__\___|
+                                              
+ 
+*/
+
+  public async translate(
+    text: string,
+    options: TranslationOptions = {
+      source: "auto",
+      output: "english",
+    }
+  ): Promise<string> {
+    const template =
+      "You are a helpful assistant that takes text in {input_language} and only responds with its translation in {output_language}.";
+    const autoTemplate =
+      "You are a helpful assistant that detects the language of the input and only responds with its translation in {output_language}.";
+
+    let promptTemplate = template;
+    if (options.source === "auto") {
+      promptTemplate = autoTemplate;
+    }
+
+    const chatPrompt = ChatPromptTemplate.fromPromptMessages([
+      SystemMessagePromptTemplate.fromTemplate(promptTemplate),
+      HumanMessagePromptTemplate.fromTemplate("{text}"),
+    ]);
+
+    const chain = new LLMChain({ llm: this.model, prompt: chatPrompt });
+
+    const response = await chain.call({
+      input_language: options.source,
+      output_language: options.output,
+      text: text,
+    });
+
+    return response.text;
   }
 }
 

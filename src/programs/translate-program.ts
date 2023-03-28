@@ -1,15 +1,13 @@
 import { ProgramInterface, ProgramInput } from "./program-interface.js";
 import EnvironmentService from "../services/environment-service.js";
 import { Argument, Option } from "commander";
-import WebExtractionService from "../services/web-extraction-service.js";
-import OpenAiChatHelper from "../helpers/open-ai-chat-helper.js";
+import OpenAiChatHelper from "../helpers/langchain/open-ai-chat-helper.js";
 
 interface TranslationInput {
   text: string; //text
-  mode: "map_reduce" | "stuff";
-  split: number;
+  source: string; // source language
+  output: string; // output language
   debug: boolean;
-  url?: string;
 }
 
 class TranslateProgram extends ProgramInterface {
@@ -17,7 +15,7 @@ class TranslateProgram extends ProgramInterface {
     return "translate";
   }
   protected get description(): string {
-    return `Allows for the translatation of text from one langauge to the other. By defualt the program detercts the input language and translates to english.`;
+    return `Allows for the translatation of text from one langauge to the other. By defualt the program detects the input language and translates to english.`;
   }
   protected get requiredEnvironmentVariables(): string[] {
     return [EnvironmentService.names.OPENAI_API_KEY];
@@ -47,8 +45,8 @@ class TranslateProgram extends ProgramInterface {
         // Summarize
         TranslateProgram.translate({
           text: inputArg,
-          mode: input.input.mode,
-          split: input.input.split,
+          source: (input.input.source as string).toLowerCase(),
+          output: (input.input.output as string).toLowerCase(),
           debug: input.globals.debug,
         });
         return;
@@ -59,7 +57,7 @@ class TranslateProgram extends ProgramInterface {
     input.command.help();
   }
 
-  private static async summarizeText(input: SummarizationInput): Promise<void> {
+  private static async translate(input: TranslationInput): Promise<void> {
     if (input.debug) {
       console.log("Input:");
       console.log(input);
@@ -69,19 +67,19 @@ class TranslateProgram extends ProgramInterface {
     // Model
     const chat = new OpenAiChatHelper({
       model: "gpt-3.5-turbo",
-      temperature: 0.7,
+      temperature: 0, // Enforces deterministic behavior
       verbose: input.debug,
     });
 
     // Run summary
-    const summary = await chat.summarize(input.text, {
-      type: input.mode,
-      split: input.split,
+    const translation = await chat.translate(input.text, {
+      source: input.source,
+      output: input.output,
     });
 
     // Output the result
     console.log();
-    console.log(summary);
+    console.log(translation);
   }
 }
 

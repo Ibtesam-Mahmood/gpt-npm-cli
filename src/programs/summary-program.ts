@@ -2,7 +2,7 @@ import { ProgramInterface, ProgramInput } from "./program-interface.js";
 import EnvironmentService from "../services/environment-service.js";
 import { Argument, Option } from "commander";
 import WebExtractionService from "../services/web-extraction-service.js";
-import OpenAiChatHelper from "../helpers/open-ai-chat-helper.js";
+import OpenAiChatHelper from "../helpers/langchain/open-ai-chat-helper.js";
 
 interface SummarizationInput {
   text: string; //url or text
