@@ -1,8 +1,12 @@
 {
   "name": "gpt-npm-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "\"# gpt-npm-cli\"",
-  "main": "index.js",
+  "exports": "./index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "build": "npx tsc",
     "start": "npx tsc & node ./dist/index.js",

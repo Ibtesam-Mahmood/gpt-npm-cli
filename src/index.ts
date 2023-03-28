@@ -4,8 +4,9 @@ import { Command } from "commander";
 import SummaryProgram from "./programs/summary-program.js";
 import figlet from "figlet";
 import ConfigureProgram from "./programs/configure/configure-program.js";
+import TranslateProgram from "./programs/translate-program.js";
 
-const version = "0.1.0";
+const version = "0.1.1";
 const description =
   "A super charged CLI for interfacing with GPT-3 and other AI services";
 
@@ -16,7 +17,7 @@ async function main(): Promise<void> {
   const cliApp = new Command()
     .version(version)
     .description(description)
-    .option("-d, --debug", "toggles verbose logging");
+    .option("-d, --debug", "toggles verbose logging", false);
 
   // Configure the help command
   cliApp.configureHelp({
@@ -29,6 +30,7 @@ async function main(): Promise<void> {
   // Confifgure the programs
   new SummaryProgram().configure(cliApp);
   new ConfigureProgram().configure(cliApp);
+  new TranslateProgram().configure(cliApp);
 
   // Parse the args for the program
   await cliApp.parseAsync(process.argv);

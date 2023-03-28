@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class EnvironmentNames {
   OPENAI_API_KEY: string = "OPENAI_API_KEY";

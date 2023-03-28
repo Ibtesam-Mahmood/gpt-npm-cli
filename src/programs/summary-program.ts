@@ -1,20 +1,23 @@
-import { ProgramInterface, ProgramInput } from "./program-interface";
-import EnvironmentService from "../services/environment-service";
-import { Argument } from "commander";
-import WebExtractionService from "../services/web-extraction-service";
-// import { LLMChain } from "langchain";
-// import {
-//   ChatMessage,
-//   HumanChatMessage,
-//   SystemChatMessage,
-// } from "langchain/schema";
+import { ProgramInterface, ProgramInput } from "./program-interface.js";
+import EnvironmentService from "../services/environment-service.js";
+import { Argument, Option } from "commander";
+import WebExtractionService from "../services/web-extraction-service.js";
+import OpenAiChatHelper from "../helpers/langchain/open-ai-chat-helper.js";
+
+interface SummarizationInput {
+  text: string; //url or text
+  mode: "map_reduce" | "stuff";
+  split: number;
+  debug: boolean;
+  url?: string;
+}
 
 class SummaryProgram extends ProgramInterface {
   protected get name(): string {
     return "summary";
   }
   protected get description(): string {
-    return `Allows for the sumarization of text and urls.\n<Required: [${EnvironmentService.names.OPENAI_API_KEY}]>`;
+    return `Allows for the sumarization of text and urls. By defualt runs the map reduce mode which does not have a limit on its input.`;
   }
   protected get requiredEnvironmentVariables(): string[] {
     return [EnvironmentService.names.OPENAI_API_KEY];
@@ -22,17 +25,36 @@ class SummaryProgram extends ProgramInterface {
   protected get arguments(): Argument[] {
     return [new Argument("[input...]", "The text or url to summarize.")];
   }
+  protected get options(): Option[] {
+    return [
+      new Option(
+        "-m, --mode <mode>",
+        "The summarization mode to run on:" +
+          "\n\tmap-reduce: Runs the map reduce mode which does not have a limit on its input." +
+          "\n\tstuff: Sends the input directly to summarization, you may encounter max rate limits."
+      )
+        .choices(["map_reduce", "stuff"])
+        .default("map_reduce"),
+      new Option(
+        "--split <split>",
+        "Defines the split length for large input texts when running with map reduce mode."
+      ).default(3000),
+    ];
+  }
 
   public async run(input: ProgramInput): Promise<void> {
     if (input.args.length > 0) {
       // Extract the text
       const inputArg = input.args[0].join(" ");
-      const debug = input.globals.debug;
 
       if (inputArg.length > 0) {
         // Summarize
-        SummaryProgram.runSummary(inputArg, debug);
-        return;
+        return SummaryProgram.runSummary({
+          text: inputArg,
+          mode: input.input.mode,
+          split: input.input.split,
+          debug: input.globals.debug,
+        });
       }
     }
 
@@ -40,19 +62,16 @@ class SummaryProgram extends ProgramInterface {
     input.command.help();
   }
 
-  private static async runSummary(
-    input: string,
-    debug: boolean = false
-  ): Promise<void> {
-    // The text to summarize
-    let text = input;
-
+  private static async runSummary(input: SummarizationInput): Promise<void> {
     // Determine if the text is a url
-    const isUrl = WebExtractionService.isUrl(input);
+    const isUrl = WebExtractionService.isUrl(input.text);
     if (isUrl) {
       // Extract the webpage content
       try {
-        text = (await WebExtractionService.extract(input)).toString();
+        input.url = input.text;
+        input.text = (
+          await WebExtractionService.extract(input.text)
+        ).toString();
       } catch (e) {
         console.error(`Could not extract webpage content from url: ${input}`);
         return;
@@ -60,57 +79,32 @@ class SummaryProgram extends ProgramInterface {
     }
 
     // Summarize the text
-    await SummaryProgram.summarize(text, debug);
+    await SummaryProgram.summarizeText(input);
   }
 
-  private static async summarize(
-    text: string,
-    debug: boolean = false
-  ): Promise<void> {
-    // Imports
-    const { OpenAIChat } = await import("langchain/llms");
-    const { CallbackManager } = await import("langchain/callbacks");
-    const { RecursiveCharacterTextSplitter } = await import(
-      "langchain/text_splitter"
-    );
-    const { loadSummarizationChain } = await import("langchain/chains");
+  private static async summarizeText(input: SummarizationInput): Promise<void> {
+    if (input.debug) {
+      console.log("Input:");
+      console.log(input);
+      console.log();
+    }
 
-    const callbackManager = CallbackManager.fromHandlers({
-      handleLLMStart: async (llm: { name: string }, prompts: string[]) => {
-        console.log(JSON.stringify(llm, null, 2));
-        console.log(JSON.stringify(prompts, null, 2));
-      },
-      handleLLMEnd: async (output: any) => {
-        console.log(JSON.stringify(output, null, 2));
-      },
-      handleLLMError: async (err: Error) => {
-        console.error(err);
-      },
-    });
-
-    // Create the model
-    const chatOpenAI = new OpenAIChat({
-      modelName: "gpt-3.5-turbo",
+    // Model
+    const chat = new OpenAiChatHelper({
+      model: "gpt-3.5-turbo",
       temperature: 0.7,
-      verbose: debug,
-      callbackManager: callbackManager,
+      verbose: input.debug,
     });
 
-    // Create the documents
-    const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 3000,
-    });
-    const docs = await textSplitter.createDocuments([text]);
-
-    // Summarize
-    const chain = loadSummarizationChain(chatOpenAI, { type: "map_reduce" });
-    const res = await chain.call({
-      input_documents: docs,
+    // Run summary
+    const summary = await chat.summarize(input.text, {
+      type: input.mode,
+      split: input.split,
     });
 
     // Output the result
     console.log();
-    console.log(res.text);
+    console.log(summary);
   }
 }
 

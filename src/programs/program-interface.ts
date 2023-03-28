@@ -34,7 +34,7 @@ abstract class ProgramInterface {
   public configure(root: Command): Command {
     let command: Command = root
       .command(this.name)
-      .description(this.description);
+      .description(this.formatDescription());
 
     // Add any arguments
     this.arguments.forEach((argument) => {
@@ -57,6 +57,16 @@ abstract class ProgramInterface {
   }
 
   protected abstract run(input: ProgramInput): Promise<void>;
+
+  // Formats the description, adding the required environment variables
+  private formatDescription(): string {
+    let description = this.description;
+    if (this.requiredEnvironmentVariables.length > 0) {
+      const envList = this.requiredEnvironmentVariables.join(", ");
+      description += `\n<Required: [${envList}]>`;
+    }
+    return description;
+  }
 
   // formats the input for the runner
   private async runWrapper(
