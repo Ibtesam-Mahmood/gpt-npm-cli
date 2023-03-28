@@ -6,7 +6,7 @@ A npm package that uses OpenAI + Langchain to perform convenient commands in the
 
 Ensure that typescript is installed globally `npm install -g typescript`.
 
-To get started with the project clone the repository and run `npm i & npm run build && npm install -g .` within the project root.
+To get started with the project clone the repository and run `npm i & npm run build & npm install -g .` within the project root.
 
 Mac or Linux users may have to run `sudo` before some of these commands.
 
