@@ -6,7 +6,7 @@ import figlet from "figlet";
 import ConfigureProgram from "./programs/configure/configure-program.js";
 import TranslateProgram from "./programs/translate-program.js";
 
-const version = "0.1.0";
+const version = "0.1.1";
 const description =
   "A super charged CLI for interfacing with GPT-3 and other AI services";
 

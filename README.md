@@ -1,4 +1,4 @@
-# gpt-npm-cli v0.1.0
+# gpt-npm-cli v0.1.1
 
 A npm package that uses OpenAI + Langchain to perform convenient commands in the terminal.
 
@@ -8,7 +8,7 @@ Ensure that typescript is installed globally `npm install -g typescript`.
 
 To get started with the project clone the repository and run `npm i & npm run build && npm install -g .` within the project root.
 
-(Mac or Linux users may have to run `sudo` before some of these commands.
+Mac or Linux users may have to run `sudo` before some of these commands.
 
 Calling the `gptcli` command from the command-line will run the CLI.
 
@@ -21,5 +21,6 @@ It is important to set your keys to expect full functionality. run the `gptcli c
 The following is a list of commands currently configured within the `gptcli`:
 - `gptcli config`: Configures environment variables required to run programs within the CLI, it is recommended that you set any required variables through this command before using the CLI.
 - `gptcli summary`: Summarizes text and webpage contents, uses map reduce to ensure no limits are encountered for the text 
+- `gptcli translate`: Translates the input text to a desired language.
 
 For more information run the `gptcli help` command.
