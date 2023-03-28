@@ -16,8 +16,14 @@ For updates simply run `git pull & npm i & npm run build` within the project roo
 
 It is important to set your keys to expect full functionality. run the `gptcli config` command for more information.
 
-## Usage
+### Example: setting the openai key
+#
+```unix
+gptcli config openai <key>
+```
 
+## Usage
+#
 The following is a list of commands currently configured within the `gptcli`:
 - `gptcli config`: Configures environment variables required to run programs within the CLI, it is recommended that you set any required variables through this command before using the CLI.
 - `gptcli summary`: Summarizes text and webpage contents, uses map reduce to ensure no limits are encountered for the text 
