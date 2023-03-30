@@ -112,6 +112,9 @@ abstract class ProgramInterface {
 
       if (input.globals.debug) {
         console.log("Running with debug mode [enabled]");
+      } else {
+        process.removeAllListeners("warning");
+        console.warn = () => {};
       }
 
       // Run the program

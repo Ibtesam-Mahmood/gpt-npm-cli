@@ -1,3 +1,7 @@
+## [0.1.2] v0.1.2
+
+* Created `understand` program
+
 ## [0.1.1] v0.1.1
 
 * Created `translate` program
