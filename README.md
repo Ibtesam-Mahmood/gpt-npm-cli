@@ -1,4 +1,4 @@
-# gpt-npm-cli v0.1.1
+# gpt-npm-cli v0.1.2
 
 A npm package that uses OpenAI + Langchain to perform convenient commands in the terminal.
 
@@ -28,5 +28,6 @@ The following is a list of commands currently configured within the `gptcli`:
 - `gptcli config`: Configures environment variables required to run programs within the CLI, it is recommended that you set any required variables through this command before using the CLI.
 - `gptcli summary`: Summarizes text and webpage contents, uses map reduce to ensure no limits are encountered for the text 
 - `gptcli translate`: Translates the input text to a desired language.
+- `gptcli understand`: Parses a webpage and allows the user to ask questions about its contents in chat format.
 
 For more information run the `gptcli help` command.

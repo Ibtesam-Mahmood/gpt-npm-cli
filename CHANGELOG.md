@@ -1,3 +1,9 @@
+## [0.1.2] v0.1.2
+
+* Created `understand` program.
+* Added local caching to `understand` program.
+* Created `EmbeddingService` for parsing and storing vector stores locally.
+
 ## [0.1.1] v0.1.1
 
 * Created `translate` program
