@@ -1,11 +1,16 @@
-import { HNSWLib, VectorStore } from "langchain/vectorstores";
-import { OpenAIEmbeddings } from "langchain/embeddings";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { VectorStore } from "langchain/vectorstores";
 import { ProgramInput, ProgramInterface } from "./program-interface.js";
 import EnvironmentService from "../services/environment-service.js";
-import { Argument } from "commander";
+import { Argument, Option } from "commander";
 import WebExtractionService from "../services/web-extraction-service.js";
 import OpenAiChatHelper from "../helpers/langchain/open-ai-chat-helper.js";
+import EmbeddingService from "../services/langchain/embedding-service.js";
+
+interface UnderstandInput {
+  url: string; //text
+  clear: boolean;
+  debug: boolean;
+}
 
 class UnderstandProgram extends ProgramInterface {
   protected get name(): string {
@@ -20,32 +25,47 @@ class UnderstandProgram extends ProgramInterface {
   protected get arguments(): Argument[] {
     return [new Argument("[input...]", "The text tranlsate.")];
   }
+  protected get options(): Option[] {
+    return [
+      new Option(
+        "-c, --clear",
+        "Clears any cached vector stores for the input, and creates a new one."
+      ).default(false),
+    ];
+  }
 
   public async run(input: ProgramInput): Promise<void> {
     // Extract the text
     const inputArg = input.args[0].join(" ");
 
     if (inputArg.length > 0) {
-      return UnderstandProgram.understandWebpage(inputArg, input.globals.debug);
+      return UnderstandProgram.understandWebpage({
+        url: inputArg,
+        clear: input.input.clear,
+        debug: input.globals.debug,
+      });
     }
 
     // Default show help
     input.command.help();
   }
 
-  public static async understandWebpage(
-    url: string,
-    debug: boolean
-  ): Promise<void> {
+  public static async understandWebpage(input: UnderstandInput): Promise<void> {
+    if (input.debug) {
+      console.log("Input:");
+      console.log(input);
+      console.log();
+    }
+
     // Embed the webpage
-    const vectorStore = await this.embedWebpage(url, debug);
+    const vectorStore = await this.embedWebpage(input);
 
     // Model
     // Create Model (Randonmess level 0.7)
     const chat = new OpenAiChatHelper({
       model: "gpt-3.5-turbo",
       temperature: 0.7,
-      verbose: debug,
+      verbose: input.debug,
     });
 
     await chat.understand(vectorStore);
@@ -53,40 +73,45 @@ class UnderstandProgram extends ProgramInterface {
 
   // Embedds the contents of a webpage into a vector store
   public static async embedWebpage(
-    url: string,
-    debug: boolean
+    input: UnderstandInput
   ): Promise<VectorStore> {
+    const { url, debug, clear } = input;
+
     // Error checking
     if (WebExtractionService.isUrl(url) == false) {
       throw new Error("Invalid URL");
     }
 
-    if (debug) {
-      console.log("Starting webpage embedding");
+    let vectorStore: VectorStore | null = null;
+    const urlDirectory = EmbeddingService.embeddingDirectory.url(url);
+
+    if (!clear) {
+      // Loads the vector store if it exists
+      vectorStore = await EmbeddingService.load({
+        path: urlDirectory,
+        debug: debug,
+      });
     }
 
-    // Extract the text
-    const text = await WebExtractionService.extract(url);
+    if (!vectorStore) {
+      // Vector store does not exist, create it
+      if (debug) {
+        console.log("Starting webpage embedding");
+      }
 
-    if (debug) {
-      console.log("Text abstraction complete");
+      // Extract the text
+      const text = await WebExtractionService.extract(url);
+
+      if (debug) {
+        console.log("Text abstraction complete");
+      }
+
+      vectorStore = await EmbeddingService.embed({
+        documents: [text.toString()],
+        path: urlDirectory,
+        debug: debug,
+      });
     }
-
-    /* Split the text into chunks */
-    const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 1000,
-    });
-    const docs = await textSplitter.createDocuments([text.toString()]);
-
-    if (debug) {
-      console.log("Initialized docs");
-    }
-
-    /* Create the vectorstore */
-    const vectorStore = await HNSWLib.fromDocuments(
-      docs,
-      new OpenAIEmbeddings()
-    );
 
     if (debug) {
       console.log("Created vector store");
