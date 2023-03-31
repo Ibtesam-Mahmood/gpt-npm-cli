@@ -1,6 +1,6 @@
 {
   "name": "gpt-npm-cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "\"# gpt-npm-cli\"",
   "exports": "./index.js",
   "type": "module",
