@@ -3,8 +3,8 @@ import { ProgramInput, ProgramInterface } from "./program-interface.js";
 import EnvironmentService from "../services/environment-service.js";
 import { Argument, Option } from "commander";
 import WebExtractionService from "../services/web-extraction-service.js";
-import OpenAiChatHelper from "../helpers/langchain/open-ai-chat-helper.js";
-import EmbeddingService from "../services/langchain/embedding-service.js";
+import OpenAiChatHelper from "../langchain/open-ai-chat-helper.js";
+import EmbeddingService from "../langchain/services/embedding-service.js";
 
 interface UnderstandInput {
   url: string; //text
