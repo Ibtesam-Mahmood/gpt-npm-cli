@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 
 class EnvironmentNames {
   OPENAI_API_KEY: string = "OPENAI_API_KEY";
+  SERPAPI_API_KEY: string = "SERPAPI_API_KEY";
 }
 
 class EnvironmentService {

@@ -27,6 +27,13 @@ class ConfigureProgram extends ProgramInterface {
       env: EnvironmentService.names.OPENAI_API_KEY,
     }).configure(this.command);
 
+    // serpapi subcommand
+    new ConfigureOpenAiProgram({
+      command: "serpapi",
+      name: "SERP API Key",
+      env: EnvironmentService.names.SERPAPI_API_KEY,
+    }).configure(this.command);
+
     return this.command!;
   }
 

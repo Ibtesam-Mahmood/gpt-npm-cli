@@ -1,10 +1,13 @@
+import { initializeAgentExecutor, Tool } from "langchain/agents";
 import { LLMChain, ChatVectorDBQAChain } from "langchain/chains";
 import { LLM } from "langchain/llms";
+import { BufferMemory } from "langchain/memory";
 import {
   ChatPromptTemplate,
   HumanMessagePromptTemplate,
   SystemMessagePromptTemplate,
 } from "langchain/prompts";
+import { Calculator, SerpAPI } from "langchain/tools";
 import { VectorStore } from "langchain/vectorstores";
 import { cliChatHelper } from "./helpers/cli-chat-helper.js";
 const { Document: LangDocument } = await import("langchain/document");
@@ -191,7 +194,53 @@ class OpenAiChatHelper {
     };
 
     // Run the chat
-    await cliChatHelper({ runner });
+    await cliChatHelper({ runner, inputTitle: "Question" });
+  }
+
+  /*
+ 
+      ____ _           _   
+     / ___| |__   __ _| |_ 
+    | |   | '_ \ / _` | __|
+    | |___| | | | (_| | |_ 
+     \____|_| |_|\__,_|\__|
+                           
+ 
+*/
+
+  public async chat(input?: { tools?: Tool[] }): Promise<void> {
+    // Create chat tools
+    const inputTools: Tool[] = [...(input?.tools ?? []), new Calculator()];
+
+    // Create the chat agent
+    const executor = await initializeAgentExecutor(
+      inputTools,
+      this.model,
+      "chat-conversational-react-description",
+      this.model.verbose
+    );
+
+    // Add memory to the agent
+    executor.memory = new BufferMemory({
+      returnMessages: true,
+      memoryKey: "chat_history",
+      inputKey: "input",
+    });
+
+    // Options for the chat helper
+    const runner = async (input: string, _: string[]): Promise<string> => {
+      const result = await executor.call({ input });
+
+      return result.output;
+    };
+    const historyUpdate = (
+      _: string,
+      __: string,
+      history: string[]
+    ): string[] => history;
+
+    // Run the chat
+    await cliChatHelper({ runner, historyUpdate });
   }
 }
 

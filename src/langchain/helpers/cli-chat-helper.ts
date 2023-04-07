@@ -7,6 +7,7 @@ interface ChatOptions {
     output: string,
     history: string[]
   ) => string[];
+  inputTitle?: string;
 }
 
 function defaultHistoryUpdate(
@@ -18,7 +19,9 @@ function defaultHistoryUpdate(
 }
 
 async function cliChatHelper(options: ChatOptions): Promise<string[]> {
-  const userInputString = `----------\nQuestion:\n----------`;
+  const userInputString = `----------\n${
+    options.inputTitle ?? "Input"
+  }:\n----------`;
   const chatInputString = `----------\nResponse:\n----------`;
   const rl = readline.createInterface({
     input: process.stdin,
