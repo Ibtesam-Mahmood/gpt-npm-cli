@@ -2,6 +2,7 @@ import { ProgramInput, ProgramInterface } from "./program-interface.js";
 import EnvironmentService from "../services/environment-service.js";
 import OpenAiChatHelper from "../langchain/open-ai-chat-helper.js";
 import { SerpAPI, Tool } from "langchain/tools";
+import ValueSerpAPI from "../langchain/tools/value-serp-tool.js";
 
 class ChatProgram extends ProgramInterface {
   protected get name(): string {
@@ -20,6 +21,7 @@ class ChatProgram extends ProgramInterface {
     // Add optional params
     description += "\n<Optional>:";
     description += `\n[${EnvironmentService.names.SERPAPI_API_KEY}]: Enables the use of the SerpAPI to enable search functionality.`;
+    description += `\n[${EnvironmentService.names.VALUESERP_API_KEY}]: Preffered over SerpAPI, enabled search functionality.`;
 
     return description;
   }
@@ -32,15 +34,22 @@ class ChatProgram extends ProgramInterface {
       verbose: input.globals.debug,
     });
 
-    const tools: Tool[] = [];
+    const tools: { [name: string]: Tool } = {};
 
-    if (process.env[EnvironmentService.names.SERPAPI_API_KEY]) {
-      console.log("SerpAPI enabled");
-      tools.push(new SerpAPI());
+    if (process.env[EnvironmentService.names.VALUESERP_API_KEY]) {
+      tools["ValueSerp"] = new ValueSerpAPI(
+        process.env[EnvironmentService.names.VALUESERP_API_KEY]
+      );
+    } else if (process.env[EnvironmentService.names.SERPAPI_API_KEY]) {
+      tools["SerpAPI"] = new SerpAPI(
+        process.env[EnvironmentService.names.SERPAPI_API_KEY]
+      );
     }
 
+    console.log(`Running with Tools: [${Object.keys(tools).join(", ")}]`);
+
     // Start chat
-    return model.chat({ tools });
+    return model.chat({ tools: Object.values(tools) });
   }
 }
 

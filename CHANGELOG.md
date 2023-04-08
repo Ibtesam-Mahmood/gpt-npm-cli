@@ -1,3 +1,12 @@
+## [0.1.3] v0.1.3
+
+* Created `chat` program.
+* Added `gptcli config serpapi` program.
+* Added `gptcli config valueserp` program.
+* Added `-c` flag to `gptcli config <key>` subcommands to clear the current key
+* Factored common chat logic between `understand` program
+* Added search functionality to `chat` program through `serpapi`
+
 ## [0.1.2] v0.1.2
 
 * Created `understand` program.
