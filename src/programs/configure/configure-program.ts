@@ -61,6 +61,13 @@ class ConfigureProgram extends ProgramInterface {
         name: "Value SERP API Key",
         env: EnvironmentService.names.VALUESERP_API_KEY,
       },
+
+      // finnhub api key
+      {
+        command: "finnhub",
+        name: "Finnhub API Key",
+        env: EnvironmentService.names.FINNHUB_API_KEY,
+      },
     ];
   }
 }
