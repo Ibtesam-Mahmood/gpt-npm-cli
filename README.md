@@ -29,5 +29,7 @@ The following is a list of commands currently configured within the `gptcli`:
 - `gptcli summary`: Summarizes text and webpage contents, uses map reduce to ensure no limits are encountered for the text 
 - `gptcli translate`: Translates the input text to a desired language.
 - `gptcli understand`: Parses a webpage and allows the user to ask questions about its contents in chat format.
+- `gptcli chat`: Runs a chat interface that can be improved with the following functionalities:
+  - Search Functionality: Provided thorugh `SerpAPI` or `ValueSerp`
 
 For more information run the `gptcli help` command.
