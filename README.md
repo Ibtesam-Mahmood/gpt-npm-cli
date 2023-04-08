@@ -1,4 +1,4 @@
-# gpt-npm-cli v0.1.2
+# gpt-npm-cli v0.1.3
 
 A npm package that uses OpenAI + Langchain to perform convenient commands in the terminal.
 
