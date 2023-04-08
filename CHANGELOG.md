@@ -1,3 +1,8 @@
+## [0.1.4] v0.1.4
+
+* Updated `chat` program to include stock price checking tool leveraging `finnhub` api.
+* Added `gptcli config finnhub` program.
+
 ## [0.1.3] v0.1.3
 
 * Created `chat` program.

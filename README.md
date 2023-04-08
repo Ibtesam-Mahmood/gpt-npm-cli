@@ -1,4 +1,4 @@
-# gpt-npm-cli v0.1.3
+# gpt-npm-cli v0.1.4
 
 A npm package that uses OpenAI + Langchain to perform convenient commands in the terminal.
 
@@ -31,5 +31,6 @@ The following is a list of commands currently configured within the `gptcli`:
 - `gptcli understand`: Parses a webpage and allows the user to ask questions about its contents in chat format.
 - `gptcli chat`: Runs a chat interface that can be improved with the following functionalities:
   - Search Functionality: Provided thorugh `SerpAPI` or `ValueSerp`
+  - Live Stock Price Functionality: Provided thorugh `Finnhub`
 
 For more information run the `gptcli help` command.
