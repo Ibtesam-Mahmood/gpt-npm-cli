@@ -8,6 +8,7 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "moduleResolution": "node16",
+    "skipLibCheck": true,
     "paths": {
       "cheerio": [
           "./node_modules/cheerio/lib/index.d.ts"

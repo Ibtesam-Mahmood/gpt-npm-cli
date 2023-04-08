@@ -10,6 +10,7 @@ class EnvironmentNames {
   OPENAI_API_KEY: string = "OPENAI_API_KEY";
   SERPAPI_API_KEY: string = "SERPAPI_API_KEY";
   VALUESERP_API_KEY: string = "VALUESERP_API_KEY";
+  FINNHUB_API_KEY: string = "FINNHUB_API_KEY";
 }
 
 class EnvironmentService {
