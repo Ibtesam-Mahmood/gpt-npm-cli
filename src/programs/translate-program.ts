@@ -1,7 +1,7 @@
 import { ProgramInterface, ProgramInput } from "./program-interface.js";
 import EnvironmentService from "../services/environment-service.js";
 import { Argument, Option } from "commander";
-import OpenAiChatHelper from "../helpers/langchain/open-ai-chat-helper.js";
+import OpenAiChatHelper from "../langchain/open-ai-chat-helper.js";
 
 interface TranslationInput {
   text: string; //text

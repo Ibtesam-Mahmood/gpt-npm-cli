@@ -34,7 +34,7 @@ abstract class ProgramInterface {
   public configure(root: Command): Command {
     let command: Command = root
       .command(this.name)
-      .description(this.formatDescription());
+      .description(this.formatDescription() + "\n\n");
 
     // Add any arguments
     this.arguments.forEach((argument) => {
@@ -59,7 +59,7 @@ abstract class ProgramInterface {
   protected abstract run(input: ProgramInput): Promise<void>;
 
   // Formats the description, adding the required environment variables
-  private formatDescription(): string {
+  protected formatDescription(): string {
     let description = this.description;
     if (this.requiredEnvironmentVariables.length > 0) {
       const envList = this.requiredEnvironmentVariables.join(", ");
@@ -106,7 +106,9 @@ abstract class ProgramInterface {
     try {
       if (!isInit) {
         throw new Error(
-          `All required environment variables are not set. required: ${this.requiredEnvironmentVariables}`
+          `All required environment variables are not set. required: ${this.requiredEnvironmentVariables.join(
+            ", "
+          )}`
         );
       }
 

@@ -1,12 +1,15 @@
+import { initializeAgentExecutor, Tool } from "langchain/agents";
 import { LLMChain, ChatVectorDBQAChain } from "langchain/chains";
-import { LLM, OpenAI } from "langchain/llms";
+import { LLM } from "langchain/llms";
+import { BufferMemory } from "langchain/memory";
 import {
   ChatPromptTemplate,
   HumanMessagePromptTemplate,
   SystemMessagePromptTemplate,
 } from "langchain/prompts";
-import * as readline from "readline";
+import { Calculator, SerpAPI } from "langchain/tools";
 import { VectorStore } from "langchain/vectorstores";
+import { cliChatHelper } from "./helpers/cli-chat-helper.js";
 const { Document: LangDocument } = await import("langchain/document");
 const { loadSummarizationChain } = await import("langchain/chains");
 const { OpenAIChat } = await import("langchain/llms");
@@ -162,8 +165,6 @@ class OpenAiChatHelper {
 
   // Runs a chat on the vector store
   public async understand(info: VectorStore): Promise<void> {
-    const userInputString = `-----\nQuestion:\n-----`;
-    const chatInputString = `-----\nResponse:\n-----`;
     const qaTemplate = `Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
 
     {context}
@@ -174,48 +175,72 @@ class OpenAiChatHelper {
     Helpful Answer:`;
 
     // define chat vars
-    const chatHistory: string[] = [];
     const chain = ChatVectorDBQAChain.fromLLM(this.model, info, {
       k: 2,
       qaTemplate: qaTemplate,
     });
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
 
-    // start the chat
-    console.log();
-    console.log('Type ".." to exit');
-    console.log();
-    console.log(userInputString);
-    rl.on("line", async (input) => {
-      // Exit the chat
-      if (input === "..") {
-        console.log();
-        console.log("Exiting chat");
-        rl.close();
-        return;
-      }
-
-      // Run the query
-      console.log();
+    // Options for the chat
+    const runner = async (
+      input: string,
+      history: string[]
+    ): Promise<string> => {
       const result = await chain.call({
         question: input,
-        chat_history: chatHistory,
+        chat_history: history,
       });
 
-      // Print resopnse and next question prompt
-      console.log();
-      console.log(chatInputString);
-      console.log(result.text);
-      console.log();
-      console.log(userInputString);
+      return result.text;
+    };
 
-      // Update the chat history
-      chatHistory.push(`User: ${input}`);
-      chatHistory.push(`Chat: ${result.text}`);
+    // Run the chat
+    await cliChatHelper({ runner, inputTitle: "Question" });
+  }
+
+  /*
+ 
+      ____ _           _   
+     / ___| |__   __ _| |_ 
+    | |   | '_ \ / _` | __|
+    | |___| | | | (_| | |_ 
+     \____|_| |_|\__,_|\__|
+                           
+ 
+*/
+
+  public async chat(input?: { tools?: Tool[] }): Promise<void> {
+    // Create chat tools
+    const inputTools: Tool[] = [...(input?.tools ?? []), new Calculator()];
+
+    // Create the chat agent
+    const executor = await initializeAgentExecutor(
+      inputTools,
+      this.model,
+      "chat-conversational-react-description",
+      this.model.verbose
+    );
+
+    // Add memory to the agent
+    executor.memory = new BufferMemory({
+      returnMessages: true,
+      memoryKey: "chat_history",
+      inputKey: "input",
     });
+
+    // Options for the chat helper
+    const runner = async (input: string, _: string[]): Promise<string> => {
+      const result = await executor.call({ input });
+
+      return result.output;
+    };
+    const historyUpdate = (
+      _: string,
+      __: string,
+      history: string[]
+    ): string[] => history;
+
+    // Run the chat
+    await cliChatHelper({ runner, historyUpdate });
   }
 }
 
