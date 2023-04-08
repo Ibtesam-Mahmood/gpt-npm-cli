@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 class EnvironmentNames {
   OPENAI_API_KEY: string = "OPENAI_API_KEY";
   SERPAPI_API_KEY: string = "SERPAPI_API_KEY";
+  VALUESERP_API_KEY: string = "VALUESERP_API_KEY";
 }
 
 class EnvironmentService {
@@ -34,6 +35,45 @@ class EnvironmentService {
 
   public static setEnvironemntFile(value: string): void {
     fs.writeFileSync(EnvironmentService.ENV_PATH, value);
+  }
+
+  public static clearEnvironment(): void {
+    EnvironmentService.setEnvironemntFile("");
+  }
+
+  public static clearFromEnvironmentFile(keys: string[]): void {
+    // Check if the environment file exists
+    let contentsList: string[] = [];
+    if (fs.existsSync(EnvironmentService.ENV_PATH)) {
+      // Pull the file contents and set the contents list
+
+      const fileContents = fs
+        .readFileSync(EnvironmentService.ENV_PATH)
+        .toString();
+      contentsList = fileContents.split("\n");
+    }
+
+    // Split the keys into a map
+    let keysMap: { [key: string]: string } = {};
+
+    contentsList.forEach((c) => {
+      const [envKey, value] = c.split("=");
+      keysMap[envKey] = value;
+    });
+
+    // Remove the keys
+    keys.forEach((k) => {
+      delete keysMap[k];
+    });
+
+    // Convert the map back into a string
+    const newContents = Object.keys(keysMap).reduce((acc, key) => {
+      if (!key) return acc;
+      return `${acc}${key}=${keysMap[key]}\n`;
+    }, "");
+
+    // Write the new contents to the file
+    EnvironmentService.setEnvironemntFile(newContents);
   }
 
   public static writeToEnvironmentFile(key: string, value: string): void {
