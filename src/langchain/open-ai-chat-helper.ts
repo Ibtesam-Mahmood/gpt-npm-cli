@@ -32,6 +32,14 @@ interface TranslationOptions {
   output: string;
 }
 
+interface AgentToolOptions {
+  tools?: { [name: string]: Tool };
+}
+
+function getToolsList(input?: AgentToolOptions) {
+  return Object.values(input?.tools ?? {});
+}
+
 class OpenAiChatHelper {
   public model: LLM;
 
@@ -209,19 +217,10 @@ class OpenAiChatHelper {
  
 */
 
-  public async chat(input?: { tools?: Tool[] }): Promise<void> {
-    // Default chat tools
-    const defaultTools: Tool[] = [
-      new Calculator(),
-      new CurrencyConversionTool(),
-    ];
-
-    // Create chat tools
-    const inputTools: Tool[] = [...(input?.tools ?? []), ...defaultTools];
-
+  public async chat(input?: AgentToolOptions): Promise<void> {
     // Create the chat agent
     const executor = await initializeAgentExecutor(
-      inputTools,
+      getToolsList(input), // input any tools
       this.model,
       "chat-conversational-react-description",
       this.model.verbose
