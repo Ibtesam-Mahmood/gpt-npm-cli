@@ -7,6 +7,7 @@ import ConfigureProgram from "./programs/configure/configure-program.js";
 import TranslateProgram from "./programs/translate-program.js";
 import UnderstandProgram from "./programs/understand-program.js";
 import ChatProgram from "./programs/chat-program.js";
+import PromptProgram from "./programs/prompt-program.js";
 
 const version = "0.1.4";
 const description =
@@ -44,6 +45,7 @@ async function main(): Promise<void> {
   new TranslateProgram().configure(cliApp);
   new UnderstandProgram().configure(cliApp);
   new ChatProgram().configure(cliApp);
+  new PromptProgram().configure(cliApp);
 
   // Parse the args for the program
   await cliApp.parseAsync(process.argv);

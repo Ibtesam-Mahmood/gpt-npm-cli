@@ -3,6 +3,9 @@
 * Added currency conversion tool to `chat` program.
 * Added alias support for programs.
 * Added `gptcli c` alias for `gptcli chat`.
+* Cleaned up `finnhub` and `currency conversion` tool integrations.
+* Created `prompt` program.
+* Created `zero-shot-react` chat agent for `prompt` program to allow for complex multi-stage reasoning.
 
 ## [0.1.4] v0.1.4
 

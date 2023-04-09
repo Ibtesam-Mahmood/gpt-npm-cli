@@ -13,7 +13,7 @@ class CurrencyConversionTool extends Tool {
 
     this.name = "currency-convert";
     this.description =
-      "a currency exchange tool. useful for when you need to convert currency values. input should comma seperated text containin the 2 ISO codes for the currencies.\nExample Input:usd,cad";
+      'a currency exchange tool. useful for when you need to convert currency values. input should comma seperated text containin the 2 ISO codes for the currencies. Example Input:"usd,cad"';
   }
 
   protected async _call(input: string): Promise<string> {

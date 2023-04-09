@@ -73,6 +73,10 @@ class OpenAiChatHelper {
     });
   }
 
+  public static get noCallBackManager() {
+    return CallbackManager.fromHandlers({});
+  }
+
   /*
  
      ____                                             
@@ -266,6 +270,8 @@ class OpenAiChatHelper {
       "chat-zero-shot-react-description",
       this.model.verbose
     );
+
+    this.model.callbackManager = OpenAiChatHelper.noCallBackManager; // Leave logging to the executor
 
     // Options for the chat helper
     const runner = async (

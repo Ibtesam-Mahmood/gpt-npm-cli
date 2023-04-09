@@ -66,13 +66,13 @@ async function run(options: ChatOptions): Promise<string[]> {
     console.log();
     console.log(chatInputString);
     console.log(result);
-    console.log();
-    console.log(userInputString);
 
     // Exit the chat
     if (stop) {
       return closeChat(false);
     }
+    console.log();
+    console.log(userInputString);
 
     // Update the chat history
     chatHistory =
