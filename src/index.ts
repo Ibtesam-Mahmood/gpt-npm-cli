@@ -9,7 +9,7 @@ import UnderstandProgram from "./programs/understand-program.js";
 import ChatProgram from "./programs/chat-program.js";
 import PromptProgram from "./programs/prompt-program.js";
 
-const version = "0.1.4";
+const version = "0.1.5";
 const description =
   "A super charged CLI for interfacing with GPT-3 and other AI services";
 
