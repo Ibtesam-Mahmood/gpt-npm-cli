@@ -1,13 +1,22 @@
 import * as readline from "readline";
 
+interface ChatRunnerOutput {
+  output: string;
+  stop?: boolean;
+}
+
 interface ChatOptions {
-  runner: (input: string, history: string[]) => Promise<string>;
+  runner: (input: string, history: string[]) => Promise<ChatRunnerOutput>;
   historyUpdate?: (
     input: string,
     output: string,
     history: string[]
   ) => string[];
   inputTitle?: string;
+}
+
+function noHistoryUpdate(_: string, __: string, history: string[]): string[] {
+  return history;
 }
 
 function defaultHistoryUpdate(
@@ -18,7 +27,7 @@ function defaultHistoryUpdate(
   return [...history, `User: ${input}`, `Chat: ${output}`];
 }
 
-async function cliChatHelper(options: ChatOptions): Promise<string[]> {
+async function run(options: ChatOptions): Promise<string[]> {
   const userInputString = `----------\n${
     options.inputTitle ?? "Input"
   }:\n----------`;
@@ -27,6 +36,13 @@ async function cliChatHelper(options: ChatOptions): Promise<string[]> {
     input: process.stdin,
     output: process.stdout,
   });
+  function closeChat(print: boolean = true): void {
+    if (print) {
+      console.log();
+      console.log("Exiting chat");
+    }
+    rl.close();
+  }
 
   // State
   let chatHistory: string[] = [];
@@ -39,15 +55,12 @@ async function cliChatHelper(options: ChatOptions): Promise<string[]> {
   rl.on("line", async (input) => {
     // Exit the chat
     if (input === "..") {
-      console.log();
-      console.log("Exiting chat");
-      rl.close();
-      return;
+      return closeChat();
     }
 
     // Run the query
     console.log();
-    const result = await options.runner(input, chatHistory);
+    const { output: result, stop } = await options.runner(input, chatHistory);
 
     // Print resopnse and next question prompt
     console.log();
@@ -55,6 +68,11 @@ async function cliChatHelper(options: ChatOptions): Promise<string[]> {
     console.log(result);
     console.log();
     console.log(userInputString);
+
+    // Exit the chat
+    if (stop) {
+      return closeChat(false);
+    }
 
     // Update the chat history
     chatHistory =
@@ -65,4 +83,10 @@ async function cliChatHelper(options: ChatOptions): Promise<string[]> {
   return chatHistory;
 }
 
-export { cliChatHelper };
+export {
+  ChatOptions,
+  ChatRunnerOutput,
+  run,
+  defaultHistoryUpdate,
+  noHistoryUpdate,
+};
