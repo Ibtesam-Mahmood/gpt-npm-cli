@@ -7,8 +7,9 @@ import ConfigureProgram from "./programs/configure/configure-program.js";
 import TranslateProgram from "./programs/translate-program.js";
 import UnderstandProgram from "./programs/understand-program.js";
 import ChatProgram from "./programs/chat-program.js";
+import PromptProgram from "./programs/prompt-program.js";
 
-const version = "0.1.4";
+const version = "0.1.5";
 const description =
   "A super charged CLI for interfacing with GPT-3 and other AI services";
 
@@ -26,7 +27,16 @@ async function main(): Promise<void> {
     sortSubcommands: true,
     sortOptions: true,
     showGlobalOptions: true,
-    subcommandTerm: (cmd: Command) => cmd.name(),
+    subcommandDescription(cmd) {
+      return cmd.description();
+    },
+    subcommandTerm: (cmd: Command): string => {
+      let term = cmd.name();
+      if (cmd.aliases().length > 0) {
+        term += `, ${cmd.aliases().join(", ")}`;
+      }
+      return term;
+    },
   });
 
   // Confifgure the programs
@@ -35,6 +45,7 @@ async function main(): Promise<void> {
   new TranslateProgram().configure(cliApp);
   new UnderstandProgram().configure(cliApp);
   new ChatProgram().configure(cliApp);
+  new PromptProgram().configure(cliApp);
 
   // Parse the args for the program
   await cliApp.parseAsync(process.argv);

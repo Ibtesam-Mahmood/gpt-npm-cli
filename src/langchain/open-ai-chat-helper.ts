@@ -9,7 +9,8 @@ import {
 } from "langchain/prompts";
 import { Calculator, SerpAPI } from "langchain/tools";
 import { VectorStore } from "langchain/vectorstores";
-import { cliChatHelper } from "./helpers/cli-chat-helper.js";
+import * as cliChat from "./helpers/cli-chat-helper.js";
+import CurrencyConversionTool from "./tools/currency-conversion-tool.js";
 const { Document: LangDocument } = await import("langchain/document");
 const { loadSummarizationChain } = await import("langchain/chains");
 const { OpenAIChat } = await import("langchain/llms");
@@ -29,6 +30,14 @@ interface SummarizationOptions {
 interface TranslationOptions {
   source: string;
   output: string;
+}
+
+interface AgentToolOptions {
+  tools?: { [name: string]: Tool };
+}
+
+function getToolsList(input?: AgentToolOptions) {
+  return Object.values(input?.tools ?? {});
 }
 
 class OpenAiChatHelper {
@@ -62,6 +71,10 @@ class OpenAiChatHelper {
         console.error(err);
       },
     });
+  }
+
+  public static get noCallBackManager() {
+    return CallbackManager.fromHandlers({});
   }
 
   /*
@@ -184,17 +197,17 @@ class OpenAiChatHelper {
     const runner = async (
       input: string,
       history: string[]
-    ): Promise<string> => {
+    ): Promise<cliChat.ChatRunnerOutput> => {
       const result = await chain.call({
         question: input,
         chat_history: history,
       });
 
-      return result.text;
+      return { output: result.text };
     };
 
     // Run the chat
-    await cliChatHelper({ runner, inputTitle: "Question" });
+    await cliChat.run({ runner, inputTitle: "Question" });
   }
 
   /*
@@ -208,13 +221,10 @@ class OpenAiChatHelper {
  
 */
 
-  public async chat(input?: { tools?: Tool[] }): Promise<void> {
-    // Create chat tools
-    const inputTools: Tool[] = [...(input?.tools ?? []), new Calculator()];
-
+  public async chat(input?: AgentToolOptions): Promise<void> {
     // Create the chat agent
     const executor = await initializeAgentExecutor(
-      inputTools,
+      getToolsList(input), // input any tools
       this.model,
       "chat-conversational-react-description",
       this.model.verbose
@@ -228,19 +238,53 @@ class OpenAiChatHelper {
     });
 
     // Options for the chat helper
-    const runner = async (input: string, _: string[]): Promise<string> => {
+    const runner = async (
+      input: string,
+      _: string[]
+    ): Promise<cliChat.ChatRunnerOutput> => {
       const result = await executor.call({ input });
 
-      return result.output;
+      return { output: result.output };
     };
-    const historyUpdate = (
-      _: string,
-      __: string,
-      history: string[]
-    ): string[] => history;
 
     // Run the chat
-    await cliChatHelper({ runner, historyUpdate });
+    await cliChat.run({ runner, historyUpdate: cliChat.noHistoryUpdate });
+  }
+
+  /*
+ 
+     _____             ____  _           _     ____                 _   
+    |__  /___ _ __ ___/ ___|| |__   ___ | |_  |  _ \ ___  __ _  ___| |_ 
+      / // _ \ '__/ _ \___ \| '_ \ / _ \| __| | |_) / _ \/ _` |/ __| __|
+     / /|  __/ | | (_) |__) | | | | (_) | |_  |  _ <  __/ (_| | (__| |_ 
+    /____\___|_|  \___/____/|_| |_|\___/ \__| |_| \_\___|\__,_|\___|\__|
+                                                                        
+ 
+*/
+
+  public async zeroShot(input?: AgentToolOptions): Promise<void> {
+    // Create the chat zero shot agent
+    const executor = await initializeAgentExecutor(
+      getToolsList(input), // input any tools
+      this.model,
+      "chat-zero-shot-react-description",
+      this.model.verbose
+    );
+
+    this.model.callbackManager = OpenAiChatHelper.noCallBackManager; // Leave logging to the executor
+
+    // Options for the chat helper
+    const runner = async (
+      input: string,
+      _: string[]
+    ): Promise<cliChat.ChatRunnerOutput> => {
+      const result = await executor.call({ input });
+
+      return { output: result.output, stop: true };
+    };
+
+    // Run the chat
+    await cliChat.run({ runner, historyUpdate: cliChat.noHistoryUpdate });
   }
 }
 
