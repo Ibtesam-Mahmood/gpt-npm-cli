@@ -7,6 +7,9 @@ class ChatProgram extends ProgramInterface {
   protected get name(): string {
     return "chat";
   }
+  protected get aliases(): string[] {
+    return ["c"];
+  }
   protected get description(): string {
     return `Runs a chat interface with ChatGPT. various api keys can be set in the environment variables to enable additional features.`;
   }

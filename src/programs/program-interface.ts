@@ -16,6 +16,9 @@ abstract class ProgramInterface {
   protected abstract get description(): string;
 
   // Optional
+  protected get aliases(): string[] {
+    return [];
+  }
   protected get arguments(): Argument[] {
     return [];
   }
@@ -35,6 +38,11 @@ abstract class ProgramInterface {
     let command: Command = root
       .command(this.name)
       .description(this.formatDescription() + "\n\n");
+
+    // Add the aliases if they exists
+    if (this.aliases) {
+      command = command.aliases(this.aliases);
+    }
 
     // Add any arguments
     this.arguments.forEach((argument) => {

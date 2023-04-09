@@ -1,6 +1,8 @@
 ## [0.1.5] v0.1.5
 
 * Added currency conversion tool to `chat` program.
+* Added alias support for programs.
+* Added `gptcli c` alias for `gptcli chat`.
 
 ## [0.1.4] v0.1.4
 

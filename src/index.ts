@@ -26,7 +26,16 @@ async function main(): Promise<void> {
     sortSubcommands: true,
     sortOptions: true,
     showGlobalOptions: true,
-    subcommandTerm: (cmd: Command) => cmd.name(),
+    subcommandDescription(cmd) {
+      return cmd.description();
+    },
+    subcommandTerm: (cmd: Command): string => {
+      let term = cmd.name();
+      if (cmd.aliases().length > 0) {
+        term += `, ${cmd.aliases().join(", ")}`;
+      }
+      return term;
+    },
   });
 
   // Confifgure the programs
