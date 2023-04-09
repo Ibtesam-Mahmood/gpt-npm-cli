@@ -26,7 +26,7 @@ class FinnhubStockPriceTool extends Tool {
     this.apiKey = apiKey as string;
     this.name = "stockPrice";
     this.description =
-      "a stock value checker. useful for when you need to find the out up to date price of a stock in USD. input should be the stock symbol or stock name.";
+      "a stock value checker. useful for when you need to find the out up to date price of a stock in USD. input only should be the stock symbol or stock name and nothing else.";
   }
 
   protected async _call(input: string, verbose?: boolean): Promise<string> {

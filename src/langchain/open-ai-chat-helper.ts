@@ -10,6 +10,7 @@ import {
 import { Calculator, SerpAPI } from "langchain/tools";
 import { VectorStore } from "langchain/vectorstores";
 import { cliChatHelper } from "./helpers/cli-chat-helper.js";
+import CurrencyConversionTool from "./tools/currency-conversion-tool.js";
 const { Document: LangDocument } = await import("langchain/document");
 const { loadSummarizationChain } = await import("langchain/chains");
 const { OpenAIChat } = await import("langchain/llms");
@@ -209,8 +210,14 @@ class OpenAiChatHelper {
 */
 
   public async chat(input?: { tools?: Tool[] }): Promise<void> {
+    // Default chat tools
+    const defaultTools: Tool[] = [
+      new Calculator(),
+      new CurrencyConversionTool(),
+    ];
+
     // Create chat tools
-    const inputTools: Tool[] = [...(input?.tools ?? []), new Calculator()];
+    const inputTools: Tool[] = [...(input?.tools ?? []), ...defaultTools];
 
     // Create the chat agent
     const executor = await initializeAgentExecutor(
